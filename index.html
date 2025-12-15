@@ -1,3 +1,96 @@
+
+Conversation opened. 18 messages. All messages read.
+
+Skip to content
+Using Epro 360 LLC Mail with screen readers
+leonobuyuki@gmail.com 
+
+1 of 15
+Consult for Epro database
+External
+Inbox
+1. Automations 2022
+Reply
+AI Overview
+Lette requested Leo's consultation to resolve coding obstacles for a university database built with GraphQL, Netlify, and GitHub.
+Leo provided a developer's video suggesting a loading workaround, but Lette prioritized specific feature requests like scrollbars and column extensions.
+After initial code was approved, Lette requested three further tweaks, which Leo's developer was delayed in completing due to illness.
+Leo last stated the developer, who was sick, promised to finish the remaining requested changes by the end of the week.
+By Gemini; there may be mistakes. Learn more
+
+Lette Berhe
+Wed, Oct 29, 6:20 PM
+Hi Leo, I hope you're doing well! I'm reaching out because we were able to find a way to build a university database using Monday's GraphQL, Netlify, and Github
+11
+
+Lette Berhe
+Tue, Dec 2, 11:18 AM (13 days ago)
+Hi Leo, did your dev give any updates? If they can provide a timeline of when they think they can get to it, that would also be helpful. Thanks,
+
+Leo Nobu
+Tue, Dec 2, 1:18 PM (13 days ago)
+to me
+
+Hi @Lette Berhe,
+
+I'm pushing the DEV to finish, but so far he didn't manage to do it. 
+
+I'll keep you posted.
+
+Best regards,
+
+Leo Nobu
+Tue, Dec 2, 3:27 PM (13 days ago)
+to me
+
+Hi @Lette Berhe , the DEV was actually sick, that's why he was ignoring me in my last few messages. 
+
+He told me that he will be able to finish by EOW. 
+
+Best regards,
+
+Lette Berhe
+Tue, Dec 2, 4:04 PM (13 days ago)
+Ahh that makes sense. Hope he is feeling better and thanks for the update!
+
+Leo Nobu
+Attachments
+Tue, Dec 2, 9:52 PM (13 days ago)
+to me
+
+Hi @Lette Berhe, 
+
+Here are the changes. The text below are sent from the DEV to me, that's why it's not addressing you directly. 
+
+image.png
+text based filtering unchanged, with numeric columns having > < ect filters
+
+image.png
+
+image.png
+full address and rankings now with same font
+
+image.png
+application fee I also now clickable
+
+8e97acc4-0ae2-4e27-82bf-1e67af07e11d.png
+
+I also changed this a little, to make it more clear that more are loading,
+it wasn't requested, so let me know if they dont like and ill remove.
+Before it just said, "loaded x"
+
+Let me know what you think.
+Best regards,
+ One attachment
+  •  Scanned by Gmail
+
+Lette Berhe <lberhe@epro360.com>
+Thu, Dec 4, 11:58 AM (11 days ago)
+to Leo
+
+Okay, thank you! I'll review and possibly reach out again because there might be a few more changes we need. 
+
+leonobuyuki@gmail.com. Press tab to insert.
 <!doctype html>
 <html lang="en">
   <head>
@@ -689,14 +782,14 @@ input:focus, select:focus, button:focus{
           { key:'geo_area', title:'Geographical Area', sortable:true, type:'chip', colId:'dropdown30', chipCategory:'geo' },
           { key:'video_state', title:'Video I about the State', type:'link', colId:'link_14' },
           { key:'city', title:'City', trunc:true, type:'text', colId:'city' },
-          { key:'address', title:'Full address', trunc:true, type:'mono', colId:'location' },
+          { key:'address', title:'Full address', trunc:true, type:'text', colId:'location' },
           { key:'virtual_tour', title:'Virtual Campus Tour?', type:'link', colId:'link_1' },
 
           /* STATUS & DROPDOWN — ensure colored chips */
           { key:'fachabitur', title:'Fachabitur?', type:'chip', colId:'status5', chipCategory:'status' },
           { key:'fach_det', title:'Fachabitur Details', trunc:true, type:'text', colId:'long_text15' },
 
-          { key:'usnews_rank', title:'U.S. News Ranking', align:'right', type:'mono', colId:'long_text' },
+          { key:'usnews_rank', title:'U.S. News Ranking', align:'right', type:'text', colId:'long_text' },
           { key:'usnews_link', title:'U.S. News Link', type:'link', colId:'link1' },
 
           { key:'type', title:'Type of Institution', type:'chip', colId:'dropdown' },
@@ -710,7 +803,7 @@ input:focus, select:focus, button:focus{
           { key:'insurance', title:'University Insurance Required?', type:'chip', colId:'dropdown8', chipCategory:'any' },
           { key:'insurance_info', title:'More Health Insurance Details', trunc:true, type:'text', colId:'long_text63' },
 
-          { key:'app_fee', title:'Application Fee', align:'right', type:'text', colId:'temporary_university_s_application_fee_cost__usd_' },
+          { key:'app_fee', title:'Application Fee', align:'right', trunc:true, type:'text', colId:'temporary_university_s_application_fee_cost__usd_' },
           { key:'how_apply', title:'How to Apply', trunc:true, type:'text', colId:'long_text842' },
 
           { key:'cred_eval', title:'Credential Eval Required', type:'chip', colId:'status38', chipCategory:'status' },
@@ -725,7 +818,6 @@ input:focus, select:focus, button:focus{
           { key:'uni_home', title:'University Homepage', type:'link', colId:'link3' },
           { key:'intl_adm', title:'International Admission', type:'link', colId:'link0' },
 
-           /* Make dropdown Bachelor's Study Areas a colored chip */
           { key:'major', title:'Bachelor’s Study Areas', sortable:true, trunc:true, type:'text', colId:'dropdown73' },
           { key:'degrees_link', title:'Bachelor’s Degrees Link', type:'link', colId:'link30' },
 
@@ -739,7 +831,7 @@ input:focus, select:focus, button:focus{
           { key:'fees', title:'Required Fees (Annual Cost in USD)', align:'right', type:'money', colId:'numbers5' },
           { key:'total', title:'TOTAL (Approximate Annual Cost in USD)', align:'right', type:'money', colId:'total_calc' },
           { key:'cost_info', title:'Additional Info and Link/s Annual Cost of Attendance', trunc:true, type:'text', colId:'link_s_annual_cost_of_attendance' },
-         
+          { key:'adm_req', title:'Admission Requirements', trunc:true, type:'text', colId:'_link__requirements_admission_information' },
 
           /* Scholarship thresholds + types (types are colored) */
           { key:'sch_low', title:'Lowest (USD) Annual Scholarship Amount', align:'right', type:'money', colId:'dup__of_minimum__usd__annual_scholarship_amount6' },
@@ -771,7 +863,6 @@ input:focus, select:focus, button:focus{
           { key:'dead_fall', title:'Fall Application Deadline', trunc:true, type:'text', colId:'deadline_fall_application' },
           { key:'dead_spring', title:'Spring Application Deadline', trunc:true, type:'text', colId:'deadline_spring_application' },
           { key:'dead_link', title:'Deadline Link', type:'link', colId:'link_104' },
-           { key:'adm_req', title:'Additional Requirements Information on Scholarship and/or Admission', trunc:true, type:'text', colId:'_link__requirements_admission_information' },
 
           { key:'campus_job', title:'Campus Employment?', type:'chip', colId:'status_113', chipCategory:'status' },
           { key:'min_wage', title:'2025 Min Wage', align:'right', type:'money', colId:'numbers985' },
@@ -1070,11 +1161,69 @@ input:focus, select:focus, button:focus{
             .join('');
         }
 
-        function operatorOptionsHTML(selectedOp){
-          const ops = [['contains','contains…'],['notcontains','does not contain…'],['is','is…'],['isnot','is not…'],['starts','starts with…'],['ends','ends with…'],['empty','is empty'],['notempty','is not empty']];
+        // function operatorOptionsHTML(selectedOp){
+        //   const ops = [
+        //     ['contains','contains…'],
+        //     ['notcontains','does not contain…'],
+        //     ['is','is…'],
+        //     ['isnot','is not…'],
+        //     ['starts','starts with…'],
+        //     ['ends','ends with…'],
+        //     ['gte','≥ (greater than or equal)'],
+        //     ['lte','≤ (less than or equal)'],
+        //     ['gt','> (greater than)'],
+        //     ['lt','< (less than)'],
+        //     ['empty','is empty'],
+        //     ['notempty','is not empty']
+        //   ];
+        //   return ops.map(([v,l])=>`<option value="${v}"${v===selectedOp?' selected':''}>${l}</option>`).join('');
+        // }
+        function operatorOptionsHTML(selectedOp, colKey){
+          // Check if this column is numeric
+          const col = COLUMNS.find(c => c.key === colKey);
+          const isNumeric = col && (col.type === 'money' || col.type === 'number');
+          
+          const textOps = [
+            ['contains','contains…'],
+            ['notcontains','does not contain…'],
+            ['is','is…'],
+            ['isnot','is not…'],
+            ['starts','starts with…'],
+            ['ends','ends with…']
+          ];
+          
+          const numericOps = [
+            ['is','is…'],
+            ['isnot','is not…'],
+            ['gte','≥ (greater than or equal)'],
+            ['lte','≤ (less than or equal)'],
+            ['gt','> (greater than)'],
+            ['lt','< (less than)']
+          ];
+          
+          const commonOps = [
+            ['empty','is empty'],
+            ['notempty','is not empty']
+          ];
+          
+          const ops = isNumeric ? [...numericOps, ...commonOps] : [...textOps, ...commonOps];
+          
           return ops.map(([v,l])=>`<option value="${v}"${v===selectedOp?' selected':''}>${l}</option>`).join('');
         }
 
+        // function rowHTML(rule, idx){
+        //   const valInput = (rule.op==='empty' || rule.op==='notempty')
+        //     ? `<input class="cond-val" type="text" value="" disabled />`
+        //     : `<input class="cond-val" type="text" value="${esc(rule.val||'')}" placeholder="value…" />`;
+        //   return `
+        //     <div class="cond-row" data-idx="${idx}">
+        //       <select class="cond-col">${columnOptionsHTML(rule.col)}</select>
+        //       <select class="cond-op">${operatorOptionsHTML(rule.op||'contains')}</select>
+        //       ${valInput}
+        //       <button type="button" class="btn cond-del" title="Remove">🗑️</button>
+        //     </div>
+        //   `;
+        // }
         function rowHTML(rule, idx){
           const valInput = (rule.op==='empty' || rule.op==='notempty')
             ? `<input class="cond-val" type="text" value="" disabled />`
@@ -1082,13 +1231,47 @@ input:focus, select:focus, button:focus{
           return `
             <div class="cond-row" data-idx="${idx}">
               <select class="cond-col">${columnOptionsHTML(rule.col)}</select>
-              <select class="cond-op">${operatorOptionsHTML(rule.op||'contains')}</select>
+              <select class="cond-op">${operatorOptionsHTML(rule.op||'contains', rule.col)}</select>
               ${valInput}
               <button type="button" class="btn cond-del" title="Remove">🗑️</button>
             </div>
           `;
         }
 
+        // function rebuildConditionsUI(){
+        //   condList.innerHTML = rules.map(rowHTML).join('');
+        //   condList.querySelectorAll('.cond-row').forEach(rowEl=>{
+        //     const idx = +rowEl.getAttribute('data-idx');
+        //     const colSel = rowEl.querySelector('.cond-col');
+        //     const opSel = rowEl.querySelector('.cond-op');
+        //     const valInp = rowEl.querySelector('.cond-val');
+        //     const delBtn = rowEl.querySelector('.cond-del');
+
+        //     colSel.addEventListener('change', e=>{
+        //       rules[idx].col = e.target.value || '';
+        //     });
+
+        //     opSel.addEventListener('change', e=>{
+        //       rules[idx].op = e.target.value || 'contains';
+        //       const needsVal = !(rules[idx].op==='empty' || rules[idx].op==='notempty'); // fixed
+        //       if (valInp) {
+        //         valInp.disabled = !needsVal;
+        //         if (!needsVal) valInp.value = '';
+        //       }
+        //     });
+
+        //     if (valInp){
+        //       valInp.addEventListener('input', e=>{
+        //         rules[idx].val = e.target.value || '';
+        //       });
+        //     }
+
+        //     delBtn.addEventListener('click', ()=>{
+        //       rules.splice(idx,1);
+        //       rebuildConditionsUI();
+        //     });
+        //   });
+        // }
         function rebuildConditionsUI(){
           condList.innerHTML = rules.map(rowHTML).join('');
           condList.querySelectorAll('.cond-row').forEach(rowEl=>{
@@ -1100,11 +1283,19 @@ input:focus, select:focus, button:focus{
 
             colSel.addEventListener('change', e=>{
               rules[idx].col = e.target.value || '';
+              // Refresh operator dropdown when column changes
+              opSel.innerHTML = operatorOptionsHTML(rules[idx].op || 'contains', rules[idx].col);
+              // Reset to default operator if current one isn't available
+              const availableOps = Array.from(opSel.options).map(opt => opt.value);
+              if (!availableOps.includes(rules[idx].op)) {
+                rules[idx].op = 'contains';
+                opSel.value = 'contains';
+              }
             });
 
             opSel.addEventListener('change', e=>{
               rules[idx].op = e.target.value || 'contains';
-              const needsVal = !(rules[idx].op==='empty' || rules[idx].op==='notempty'); // fixed
+              const needsVal = !(rules[idx].op==='empty' || rules[idx].op==='notempty');
               if (valInp) {
                 valInp.disabled = !needsVal;
                 if (!needsVal) valInp.value = '';
@@ -1120,6 +1311,7 @@ input:focus, select:focus, button:focus{
             delBtn.addEventListener('click', ()=>{
               rules.splice(idx,1);
               rebuildConditionsUI();
+              render(); // Apply the filter
             });
           });
         }
@@ -1404,6 +1596,33 @@ input:focus, select:focus, button:focus{
               case 'ends': if (!v || s.slice(-v.length) === v) break; else return false;
               case 'empty': if (s.trim() === '') break; else return false;
               case 'notempty': if (s.trim() !== '') break; else return false;
+
+              // Numeric comparisons
+              case 'gte': {
+                const cellNum = numberFrom(cell);
+                const valNum = numberFrom(r.val);
+                if (cellNum != null && valNum != null && cellNum >= valNum) break;
+                else return false;
+              }
+              case 'lte': {
+                const cellNum = numberFrom(cell);
+                const valNum = numberFrom(r.val);
+                if (cellNum != null && valNum != null && cellNum <= valNum) break;
+                else return false;
+              }
+              case 'gt': {
+                const cellNum = numberFrom(cell);
+                const valNum = numberFrom(r.val);
+                if (cellNum != null && valNum != null && cellNum > valNum) break;
+                else return false;
+              }
+              case 'lt': {
+                const cellNum = numberFrom(cell);
+                const valNum = numberFrom(r.val);
+                if (cellNum != null && valNum != null && cellNum < valNum) break;
+                else return false;
+              }
+
               default: break;
             }
           }
@@ -1508,16 +1727,41 @@ input:focus, select:focus, button:focus{
         }
 
         // Progress badge updater
+        // function updateProgressBadge(){
+        //   if (!loadProgress) return;
+        //   const loadedCount = items.length;
+        //   if (totalItems != null) {
+        //     loadProgress.textContent = `${loadedCount} / ${totalItems} loaded`; // fixed
+        //   } else {
+        //     loadProgress.textContent = `${loadedCount} loaded`; // fixed
+        //   }
+        //   const done = !cursor;
+        //   loadProgress.style.display = done ? 'none' : 'inline-block';
+        // }
         function updateProgressBadge(){
           if (!loadProgress) return;
           const loadedCount = items.length;
-          if (totalItems != null) {
-            loadProgress.textContent = `${loadedCount} / ${totalItems} loaded`; // fixed
+          
+          if (isLoading && cursor) {
+            // Actively loading more data
+            if (totalItems != null) {
+              loadProgress.textContent = `Loading... ${loadedCount} / ${totalItems}`;
+            } else {
+              loadProgress.textContent = `Loading... ${loadedCount} so far`;
+            }
+            loadProgress.style.display = 'inline-block';
+          } else if (cursor) {
+            // Has more data but not currently loading
+            if (totalItems != null) {
+              loadProgress.textContent = `${loadedCount} / ${totalItems} loaded`;
+            } else {
+              loadProgress.textContent = `${loadedCount} loaded`;
+            }
+            loadProgress.style.display = 'inline-block';
           } else {
-            loadProgress.textContent = `${loadedCount} loaded`; // fixed
+            // All done
+            loadProgress.style.display = 'none';
           }
-          const done = !cursor;
-          loadProgress.style.display = done ? 'none' : 'inline-block';
         }
 
         // Delegated click for popup (for .trunc spans) — single listener
@@ -1756,3 +2000,5 @@ input:focus, select:focus, button:focus{
 
   </body>
 </html>
+index.html
+Displaying index.html.
