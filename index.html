@@ -827,54 +827,6 @@ input:focus, select:focus, button:focus{
         const tableWrap = document.getElementById('tableWrap');
         const tbl = document.getElementById('tbl');
 
-        // Sticky horizontal scrollbar
-        // const hScrollBar = document.getElementById('hScrollBar');
-        // const hScrollContent = document.getElementById('hScrollContent');
-
-        // Sync sticky scrollbar with table horizontal scrolling
-        // function syncHorizontalScroll(){
-        //   const tableWidth = tbl ? tbl.scrollWidth : 0;
-        //   const containerWidth = tableWrap ? tableWrap.clientWidth : 0;
-          
-        //   if (tableWidth > containerWidth) {
-        //     // Table is wider than container, show scrollbar
-        //     hScrollBar.style.display = 'block';
-        //     hScrollContent.style.width = tableWidth + 'px';
-        //   } else {
-        //     // No horizontal scroll needed
-        //     hScrollBar.style.display = 'none';
-        //   }
-        // }
-
-        // // Sync scrolling between table and sticky scrollbar
-        // if (tableWrap && hScrollBar) {
-        //   let isTableScrolling = false;
-        //   let isBarScrolling = false;
-
-        //   tableWrap.addEventListener('scroll', () => {
-        //     if (isBarScrolling) return;
-        //     isTableScrolling = true;
-            
-        //     requestAnimationFrame(() => {
-        //       hScrollBar.scrollLeft = tableWrap.scrollLeft;
-        //       isTableScrolling = false;
-        //     });
-        //   }, { passive: true });
-
-        //   hScrollBar.addEventListener('scroll', () => {
-        //     if (isTableScrolling) return;
-        //     isBarScrolling = true;
-            
-        //     requestAnimationFrame(() => {
-        //       tableWrap.scrollLeft = hScrollBar.scrollLeft;
-        //       isBarScrolling = false;
-        //     });
-        //   }, { passive: true });
-        // }
-
-        // Update scrollbar on window resize
-        // window.addEventListener('resize', syncHorizontalScroll);
-
         // Buttons (optional in DOM; guarded below)
         const reloadBtn = document.getElementById('reloadBtn');
         const reloadSpin = document.getElementById('reloadSpin');
@@ -1068,21 +1020,61 @@ input:focus, select:focus, button:focus{
             .join('');
         }
 
-        // function operatorOptionsHTML(selectedOp){
-        //   const ops = [
+        // Extract unique study areas from all items
+        function getUniqueStudyAreas(){
+          const areas = new Set();
+          items.forEach(item => {
+            const majorVal = item.major || readCell(item, 'dropdown73');
+            if (majorVal) {
+              const parts = String(majorVal).split(',').map(s => s.trim()).filter(Boolean);
+              parts.forEach(part => areas.add(part));
+            }
+          });
+          return Array.from(areas).sort();
+        }
+
+        // Generate dropdown HTML for study areas
+        function studyAreasDropdownHTML(selectedVal){
+          const areas = getUniqueStudyAreas();
+          let html = '<option value="">Select a study area…</option>';
+          areas.forEach(area => {
+            const selected = area === selectedVal ? ' selected' : '';
+            html += `<option value="${esc(area)}"${selected}>${esc(area)}</option>`;
+          });
+          return html;
+        }
+
+        
+        // function operatorOptionsHTML(selectedOp, colKey){
+        //   // Check if this column is numeric
+        //   const col = COLUMNS.find(c => c.key === colKey);
+        //   const isNumeric = col && (col.type === 'money' || col.type === 'number');
+          
+        //   const textOps = [
         //     ['contains','contains…'],
         //     ['notcontains','does not contain…'],
         //     ['is','is…'],
         //     ['isnot','is not…'],
         //     ['starts','starts with…'],
-        //     ['ends','ends with…'],
+        //     ['ends','ends with…']
+        //   ];
+          
+        //   const numericOps = [
+        //     ['is','is…'],
+        //     ['isnot','is not…'],
         //     ['gte','≥ (greater than or equal)'],
         //     ['lte','≤ (less than or equal)'],
         //     ['gt','> (greater than)'],
-        //     ['lt','< (less than)'],
+        //     ['lt','< (less than)']
+        //   ];
+          
+        //   const commonOps = [
         //     ['empty','is empty'],
         //     ['notempty','is not empty']
         //   ];
+          
+        //   const ops = isNumeric ? [...numericOps, ...commonOps] : [...textOps, ...commonOps];
+          
         //   return ops.map(([v,l])=>`<option value="${v}"${v===selectedOp?' selected':''}>${l}</option>`).join('');
         // }
         function operatorOptionsHTML(selectedOp, colKey){
@@ -1099,6 +1091,11 @@ input:focus, select:focus, button:focus{
             ['ends','ends with…']
           ];
           
+          // NEW: Filter out 'is' and 'isnot' for the major column
+          const textOpsFiltered = colKey === 'major' 
+            ? textOps.filter(([v]) => v !== 'is' && v !== 'isnot')
+            : textOps;
+          
           const numericOps = [
             ['is','is…'],
             ['isnot','is not…'],
@@ -1113,7 +1110,7 @@ input:focus, select:focus, button:focus{
             ['notempty','is not empty']
           ];
           
-          const ops = isNumeric ? [...numericOps, ...commonOps] : [...textOps, ...commonOps];
+          const ops = isNumeric ? [...numericOps, ...commonOps] : [...textOpsFiltered, ...commonOps];
           
           return ops.map(([v,l])=>`<option value="${v}"${v===selectedOp?' selected':''}>${l}</option>`).join('');
         }
@@ -1125,16 +1122,26 @@ input:focus, select:focus, button:focus{
         //   return `
         //     <div class="cond-row" data-idx="${idx}">
         //       <select class="cond-col">${columnOptionsHTML(rule.col)}</select>
-        //       <select class="cond-op">${operatorOptionsHTML(rule.op||'contains')}</select>
+        //       <select class="cond-op">${operatorOptionsHTML(rule.op||'contains', rule.col)}</select>
         //       ${valInput}
         //       <button type="button" class="btn cond-del" title="Remove">🗑️</button>
         //     </div>
         //   `;
         // }
+
         function rowHTML(rule, idx){
-          const valInput = (rule.op==='empty' || rule.op==='notempty')
-            ? `<input class="cond-val" type="text" value="" disabled />`
-            : `<input class="cond-val" type="text" value="${esc(rule.val||'')}" placeholder="value…" />`;
+          const isMajorColumn = rule.col === 'major';
+          const needsVal = !(rule.op==='empty' || rule.op==='notempty');
+          
+          let valInput;
+          if (!needsVal) {
+            valInput = `<input class="cond-val" type="text" value="" disabled />`;
+          } else if (isMajorColumn) {
+            valInput = `<select class="cond-val cond-val-dropdown">${studyAreasDropdownHTML(rule.val)}</select>`;
+          } else {
+            valInput = `<input class="cond-val" type="text" value="${esc(rule.val||'')}" placeholder="value…" />`;
+          }
+          
           return `
             <div class="cond-row" data-idx="${idx}">
               <select class="cond-col">${columnOptionsHTML(rule.col)}</select>
@@ -1144,6 +1151,7 @@ input:focus, select:focus, button:focus{
             </div>
           `;
         }
+
 
         // function rebuildConditionsUI(){
         //   condList.innerHTML = rules.map(rowHTML).join('');
@@ -1156,11 +1164,19 @@ input:focus, select:focus, button:focus{
 
         //     colSel.addEventListener('change', e=>{
         //       rules[idx].col = e.target.value || '';
+        //       // Refresh operator dropdown when column changes
+        //       opSel.innerHTML = operatorOptionsHTML(rules[idx].op || 'contains', rules[idx].col);
+        //       // Reset to default operator if current one isn't available
+        //       const availableOps = Array.from(opSel.options).map(opt => opt.value);
+        //       if (!availableOps.includes(rules[idx].op)) {
+        //         rules[idx].op = 'contains';
+        //         opSel.value = 'contains';
+        //       }
         //     });
 
         //     opSel.addEventListener('change', e=>{
         //       rules[idx].op = e.target.value || 'contains';
-        //       const needsVal = !(rules[idx].op==='empty' || rules[idx].op==='notempty'); // fixed
+        //       const needsVal = !(rules[idx].op==='empty' || rules[idx].op==='notempty');
         //       if (valInp) {
         //         valInp.disabled = !needsVal;
         //         if (!needsVal) valInp.value = '';
@@ -1176,6 +1192,7 @@ input:focus, select:focus, button:focus{
         //     delBtn.addEventListener('click', ()=>{
         //       rules.splice(idx,1);
         //       rebuildConditionsUI();
+        //       render(); // Apply the filter
         //     });
         //   });
         // }
@@ -1189,10 +1206,18 @@ input:focus, select:focus, button:focus{
             const delBtn = rowEl.querySelector('.cond-del');
 
             colSel.addEventListener('change', e=>{
+              const oldCol = rules[idx].col;
               rules[idx].col = e.target.value || '';
-              // Refresh operator dropdown when column changes
+              
+              const newCol = rules[idx].col;
+              if ((oldCol === 'major' && newCol !== 'major') || (oldCol !== 'major' && newCol === 'major')) {
+                rules[idx].val = '';
+                rebuildConditionsUI();
+                return;
+              }
+              
               opSel.innerHTML = operatorOptionsHTML(rules[idx].op || 'contains', rules[idx].col);
-              // Reset to default operator if current one isn't available
+              
               const availableOps = Array.from(opSel.options).map(opt => opt.value);
               if (!availableOps.includes(rules[idx].op)) {
                 rules[idx].op = 'contains';
@@ -1203,22 +1228,31 @@ input:focus, select:focus, button:focus{
             opSel.addEventListener('change', e=>{
               rules[idx].op = e.target.value || 'contains';
               const needsVal = !(rules[idx].op==='empty' || rules[idx].op==='notempty');
+              
               if (valInp) {
                 valInp.disabled = !needsVal;
-                if (!needsVal) valInp.value = '';
+                if (!needsVal) {
+                  valInp.value = '';
+                }
               }
             });
 
             if (valInp){
-              valInp.addEventListener('input', e=>{
-                rules[idx].val = e.target.value || '';
-              });
+              if (valInp.tagName === 'SELECT') {
+                valInp.addEventListener('change', e=>{
+                  rules[idx].val = e.target.value || '';
+                });
+              } else {
+                valInp.addEventListener('input', e=>{
+                  rules[idx].val = e.target.value || '';
+                });
+              }
             }
 
             delBtn.addEventListener('click', ()=>{
               rules.splice(idx,1);
               rebuildConditionsUI();
-              render(); // Apply the filter
+              render();
             });
           });
         }
@@ -1486,51 +1520,160 @@ input:focus, select:focus, button:focus{
         let isLoading = false;
 
         // --------- Filtering logic (multi-rule, AND)
+        // function passesAll(row){
+        //   if (!rules || !rules.length) return true;
+        //   for (const r of rules){
+        //     const key = (r.col||'').trim();
+        //     if (!key) return true;
+        //     const cell = row[key];
+        //     const s = (cell==null ? '' : String(cell)).toLowerCase();
+        //     const v = String(r.val || '').toLowerCase();
+        //     switch (r.op){
+        //       case 'contains': if (!v || s.indexOf(v) !== -1) break; else return false;
+        //       case 'notcontains': if (!v || s.indexOf(v) === -1) break; else return false;
+        //       case 'is': if (s === v) break; else return false;
+        //       case 'isnot': if (s !== v) break; else return false;
+        //       case 'starts': if (!v || s.lastIndexOf(v, 0) === 0) break; else return false;
+        //       case 'ends': if (!v || s.slice(-v.length) === v) break; else return false;
+        //       case 'empty': if (s.trim() === '') break; else return false;
+        //       case 'notempty': if (s.trim() !== '') break; else return false;
+
+        //       // Numeric comparisons
+        //       case 'gte': {
+        //         const cellNum = numberFrom(cell);
+        //         const valNum = numberFrom(r.val);
+        //         if (cellNum != null && valNum != null && cellNum >= valNum) break;
+        //         else return false;
+        //       }
+        //       case 'lte': {
+        //         const cellNum = numberFrom(cell);
+        //         const valNum = numberFrom(r.val);
+        //         if (cellNum != null && valNum != null && cellNum <= valNum) break;
+        //         else return false;
+        //       }
+        //       case 'gt': {
+        //         const cellNum = numberFrom(cell);
+        //         const valNum = numberFrom(r.val);
+        //         if (cellNum != null && valNum != null && cellNum > valNum) break;
+        //         else return false;
+        //       }
+        //       case 'lt': {
+        //         const cellNum = numberFrom(cell);
+        //         const valNum = numberFrom(r.val);
+        //         if (cellNum != null && valNum != null && cellNum < valNum) break;
+        //         else return false;
+        //       }
+
+        //       default: break;
+        //     }
+        //   }
+        //   return true;
+        // }
         function passesAll(row){
           if (!rules || !rules.length) return true;
+          
           for (const r of rules){
             const key = (r.col||'').trim();
             if (!key) return true;
+            
             const cell = row[key];
             const s = (cell==null ? '' : String(cell)).toLowerCase();
             const v = String(r.val || '').toLowerCase();
-            switch (r.op){
-              case 'contains': if (!v || s.indexOf(v) !== -1) break; else return false;
-              case 'notcontains': if (!v || s.indexOf(v) === -1) break; else return false;
-              case 'is': if (s === v) break; else return false;
-              case 'isnot': if (s !== v) break; else return false;
-              case 'starts': if (!v || s.lastIndexOf(v, 0) === 0) break; else return false;
-              case 'ends': if (!v || s.slice(-v.length) === v) break; else return false;
-              case 'empty': if (s.trim() === '') break; else return false;
-              case 'notempty': if (s.trim() !== '') break; else return false;
+            
+            // Special handling for 'major' column - exact match on comma-separated values
+            if (key === 'major') {
+              // Split the cell value into individual study areas
+              const studyAreas = s.split(',').map(area => area.trim()).filter(Boolean);
+              
+              switch (r.op){
+                case 'contains': {
+                  // Check if the exact value exists in the list
+                  if (!v) break; // empty filter value passes
+                  const found = studyAreas.some(area => area === v);
+                  if (found) break;
+                  else return false;
+                }
+                case 'notcontains': {
+                  // Check that the exact value does NOT exist in the list
+                  if (!v) break; // empty filter value passes
+                  const found = studyAreas.some(area => area === v);
+                  if (!found) break;
+                  else return false;
+                }
+                case 'is': {
+                  // Exact match of the entire field
+                  if (s === v) break;
+                  else return false;
+                }
+                case 'isnot': {
+                  // Not an exact match of the entire field
+                  if (s !== v) break;
+                  else return false;
+                }
+                case 'starts': {
+                  // Check if any study area starts with the value
+                  if (!v) break;
+                  const found = studyAreas.some(area => area.startsWith(v));
+                  if (found) break;
+                  else return false;
+                }
+                case 'ends': {
+                  // Check if any study area ends with the value
+                  if (!v) break;
+                  const found = studyAreas.some(area => area.endsWith(v));
+                  if (found) break;
+                  else return false;
+                }
+                case 'empty': {
+                  if (s.trim() === '') break;
+                  else return false;
+                }
+                case 'notempty': {
+                  if (s.trim() !== '') break;
+                  else return false;
+                }
+                default: break;
+              }
+            } else {
+              // Original logic for all other columns
+              switch (r.op){
+                case 'contains': if (!v || s.indexOf(v) !== -1) break; else return false;
+                case 'notcontains': if (!v || s.indexOf(v) === -1) break; else return false;
+                case 'is': if (s === v) break; else return false;
+                case 'isnot': if (s !== v) break; else return false;
+                case 'starts': if (!v || s.lastIndexOf(v, 0) === 0) break; else return false;
+                case 'ends': if (!v || s.slice(-v.length) === v) break; else return false;
+                case 'empty': if (s.trim() === '') break; else return false;
+                case 'notempty': if (s.trim() !== '') break; else return false;
 
-              // Numeric comparisons
-              case 'gte': {
-                const cellNum = numberFrom(cell);
-                const valNum = numberFrom(r.val);
-                if (cellNum != null && valNum != null && cellNum >= valNum) break;
-                else return false;
-              }
-              case 'lte': {
-                const cellNum = numberFrom(cell);
-                const valNum = numberFrom(r.val);
-                if (cellNum != null && valNum != null && cellNum <= valNum) break;
-                else return false;
-              }
-              case 'gt': {
-                const cellNum = numberFrom(cell);
-                const valNum = numberFrom(r.val);
-                if (cellNum != null && valNum != null && cellNum > valNum) break;
-                else return false;
-              }
-              case 'lt': {
-                const cellNum = numberFrom(cell);
-                const valNum = numberFrom(r.val);
-                if (cellNum != null && valNum != null && cellNum < valNum) break;
-                else return false;
-              }
+                // Numeric comparisons
+                case 'gte': {
+                  const cellNum = numberFrom(cell);
+                  const valNum = numberFrom(r.val);
+                  if (cellNum != null && valNum != null && cellNum >= valNum) break;
+                  else return false;
+                }
+                case 'lte': {
+                  const cellNum = numberFrom(cell);
+                  const valNum = numberFrom(r.val);
+                  if (cellNum != null && valNum != null && cellNum <= valNum) break;
+                  else return false;
+                }
+                case 'gt': {
+                  const cellNum = numberFrom(cell);
+                  const valNum = numberFrom(r.val);
+                  if (cellNum != null && valNum != null && cellNum > valNum) break;
+                  else return false;
+                }
+                case 'lt': {
+                  const cellNum = numberFrom(cell);
+                  const valNum = numberFrom(r.val);
+                  if (cellNum != null && valNum != null && cellNum < valNum) break;
+                  else return false;
+                }
 
-              default: break;
+                default: break;
+              }
             }
           }
           return true;
