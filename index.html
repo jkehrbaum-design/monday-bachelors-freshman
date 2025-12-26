@@ -1020,18 +1020,41 @@ input:focus, select:focus, button:focus{
             .join('');
         }
 
-        // Extract unique study areas from all items
+         // Extract unique study areas from all items
         function getUniqueStudyAreas(){
-          const areas = new Set();
-          items.forEach(item => {
-            const majorVal = item.major || readCell(item, 'dropdown73');
-            if (majorVal) {
-              const parts = String(majorVal).split(',').map(s => s.trim()).filter(Boolean);
-              parts.forEach(part => areas.add(part));
-            }
-          });
-          return Array.from(areas).sort();
-        }
+  const areas = new Set();
+
+  items.forEach(item => {
+    const majorVal = item.major || readCell(item, 'dropdown73');
+    if (majorVal) {
+      String(majorVal)
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean)
+        .forEach(part => areas.add(part));
+    }
+  });
+
+  return Array.from(areas).sort((a, b) => {
+    const aIsNo = a.toLowerCase().startsWith('no ');
+    const bIsNo = b.toLowerCase().startsWith('no ');
+
+    const aBase = aIsNo ? a.slice(3).toLowerCase() : a.toLowerCase();
+    const bBase = bIsNo ? b.slice(3).toLowerCase() : b.toLowerCase();
+
+    // 1) Sort by base subject alphabetically
+    if (aBase !== bBase) {
+      return aBase.localeCompare(bBase);
+    }
+
+    // 2) Same subject → positive first, "No ..." second
+    if (aIsNo !== bIsNo) {
+      return aIsNo ? 1 : -1;
+    }
+
+    return 0;
+  });
+}
 
         // Generate dropdown HTML for study areas
         function studyAreasDropdownHTML(selectedVal){
